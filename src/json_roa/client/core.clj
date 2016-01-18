@@ -13,7 +13,7 @@
     [clj-logging-config.log4j :as logging-config]
     [clojure.tools.logging :as logging]
     [logbug.debug :as debug :refer [identity-with-logging]]
-    [logbug.ring :as logbug-ring :refer [o->]]
+    [logbug.ring :as logbug-ring]
     [logbug.thrown :as thrown]
     [logbug.catcher :as catcher]
     )
@@ -45,7 +45,7 @@
   (-> response :body :_json-roa))
 
 (defn relation [response rel-key]
-  (catcher/wrap-with-log-error
+  (catcher/with-logging {}
     (-> response
         json-roa-data
         :relations
@@ -60,7 +60,7 @@
 
 (defn get [relation url-params & {:keys [mod-conn-opts]
                                   :or {mod-conn-opts identity}}]
-  (catcher/wrap-with-log-error
+  (catcher/with-logging {}
     (when relation
       (let [conn-opts (-> relation :roa-conn-opts mod-conn-opts)
             uri (build-uri (-> conn-opts :url)
