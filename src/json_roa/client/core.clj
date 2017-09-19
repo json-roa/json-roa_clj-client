@@ -92,7 +92,10 @@
         middleware (-> conn-opts :middleware)]
     (when-let [collection (-> response json-roa-data :collection)]
       (logging/debug 'COLLECTION collection)
-      (let [rels (->> collection :relations (map second)
+      (let [rels (->> collection :relations
+                      (into [])
+                      (sort-by first)
+                      (map second)
                       (map #(assoc % :roa-conn-opts conn-opts)))
             next-rel (-> collection :next (or {})
                          (assoc :roa-conn-opts conn-opts))]

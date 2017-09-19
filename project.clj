@@ -1,4 +1,4 @@
-(defproject json-roa_clj-client "0.2.0"
+(defproject json-roa_clj-client "0.2.1"
   :description "Clojure JSON-ROA Client Reference Implementation"
   :url "https://github.com/json-roa/json-roa_clj-client"
   :license {:name "Dual: EPL and LGPL"}
