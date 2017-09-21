@@ -1,4 +1,4 @@
-; Copyright (C) 2015 Dr. Thomas Schank  (DrTom@schank.ch, Thomas.Schank@algocon.ch)
+; Copyright (C) 2015-2017 Dr. Thomas Schank  (DrTom@schank.ch, Thomas.Schank@algocon.ch)
 
 (ns json-roa.client.core
 
@@ -21,7 +21,6 @@
   (:import
     [java.net URI URL]
     ))
-
 
 ;##############################################################################
 
@@ -58,7 +57,9 @@
     (uritemplate relation-uri
                  (clojure.walk/stringify-keys url-params))))
 
-(defn get [relation url-params & {:keys [mod-conn-opts]
+(defn get
+  "DEPRECATED use request."
+  [relation url-params & {:keys [mod-conn-opts]
                                   :or {mod-conn-opts identity}}]
   (catcher/with-logging {}
     (when relation
@@ -74,6 +75,33 @@
                 (dissoc conn-opts :roa-conn-opts)
                 {:url uri})))
           :roa-conn-opts conn-opts)))))
+
+(defn request
+  "Submits a HTTP requests. The first and mandatory argument is the roa-relation.
+  The second optional parameter is a map specifying the url-parameters used for
+  templating the URL and defaults to the empty map. The third argument is the method
+  and defaults to :get. The fourth argument is a map of parameters passed to http-client.
+  The fifths argument is a function which gets passed the parameters for http-client. The
+  return value will be the parameters passed to http-client."
+  [rel & [url-params method opts mod-opts]]
+  (let [url-params (or url-params {})
+        method (or method :get)
+        opts (or opts {})
+        mod-opts (or mod-opts identity)]
+    (let [roa-conn-opts (-> rel :roa-conn-opts)
+          uri (build-uri (-> roa-conn-opts :url)
+                         (-> rel :href)
+                         url-params)
+          params (-> roa-conn-opts
+                     (merge {:url uri
+                             :method method})
+                     (merge opts)
+                     mod-opts)
+          middleware (-> roa-conn-opts :middleware)]
+      (assoc
+        (http-client/with-middleware middleware
+          (http-client/request params))
+        :roa-conn-opts roa-conn-opts))))
 
 
 ;##############################################################################
