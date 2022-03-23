@@ -1,23 +1,17 @@
 ; Copyright (C) 2015-2017 Dr. Thomas Schank  (DrTom@schank.ch, Thomas.Schank@algocon.ch)
 
 (ns json-roa.client.core
-
   (:refer-clojure :exclude [get])
-
   (:require
-
     [clj-http.client :as http-client]
     [uritemplate-clj.core :refer [uritemplate]]
     [clojurewerkz.urly.core :as urly]
-
-    [clj-logging-config.log4j :as logging-config]
-    [clojure.tools.logging :as logging]
     [logbug.debug :as debug :refer [identity-with-logging]]
     [logbug.ring :as logbug-ring]
     [logbug.thrown :as thrown]
     [logbug.catcher :as catcher]
+    [clojure.tools.logging :as logging]
     )
-
   (:import
     [java.net URI URL]
     ))
